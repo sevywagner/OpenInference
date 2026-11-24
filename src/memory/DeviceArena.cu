@@ -43,7 +43,7 @@ namespace Memory {
       _excess.push_back(::std::move(buf));
     } else {
       res = static_cast<void *>(_memory.get() + _memory_it);
-      _memory_it += size;
+      _memory_it += size + (256 - (size % DEVICE_PTR_ALIGNMENT));
     }
 
     return res;
@@ -51,5 +51,6 @@ namespace Memory {
 
   void DeviceArena::reset() {
     CUDA_CHECK(cudaMemset(_memory.get(), 0, _memory_it));
+    _memory_it = 0;
   }
 };

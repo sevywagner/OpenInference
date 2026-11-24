@@ -55,7 +55,7 @@ class Tensor {
     return _dims;
   }
 
-  u64 get_size() {
+  u64 size() {
     return _size;
   }
 

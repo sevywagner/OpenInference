@@ -1,3 +1,4 @@
+
 # InferenceEngine
 
 **v0.0.1** · **CUDA C++** · **Work in progress**
@@ -8,7 +9,7 @@ A GPU-first language-model inference engine built from the ground up in CUDA C++
 
 ## Current state — v0.0.1
 
-This first release establishes the core infrastructure and an initial custom attention kernel. **The inference engine is not yet end-to-end functional**; the tokenizer, execution path, and driver are still being developed.
+The project currently includes the core infrastructure, a custom attention kernel, and a baseline RMSNorm kernel. **The inference engine is not yet end-to-end functional**; the tokenizer, execution path, and driver are still being developed.
 
 | Component | Status | Description |
 | --- | --- | --- |
@@ -17,7 +18,8 @@ This first release establishes the core infrastructure and an initial custom att
 | **Tensors** | Implemented | Foundational tensor containers and host/device data handling. |
 | **Matrix multiplication** | Implemented | GPU matrix multiplication backed by **cuBLAS**. |
 | **Fused attention prefill** | Implemented | Custom causal grouped-query attention (GQA) prefill kernel, written with **CuTe** and Tensor Core MMA instructions. |
-| **Numerical tests** | Available | GoogleTest suite covering matrix multiplication and comparing the attention kernel against a CPU reference. |
+| **RMSNorm** | Implemented | Custom fused RMS normalization kernel using warp shuffles and shared-memory reduction, supporting in-place and out-of-place output. |
+| **Numerical tests** | Available | GoogleTest suite covering matrix multiplication and comparing attention and RMSNorm kernels against CPU references. |
 
 ### Custom fused attention kernel
 
@@ -62,7 +64,7 @@ Run the test executable:
 ./build/test/test
 ```
 
-The attention test compares GPU output to an independent CPU implementation of causal GQA, using a combined absolute/relative tolerance. The main executable currently reports that the inference driver has not yet been implemented.
+The attention and RMSNorm tests compare GPU outputs against CPU reference implementations, using combined absolute/relative tolerances. The main executable currently reports that the inference driver has not yet been implemented.
 
 ## Roadmap
 
@@ -71,7 +73,6 @@ The attention test compares GPU output to an independent CPU implementation of c
 - [ ] Extend the existing attention prefill kernel to additional head dimensions by adjusting the host-side problem and CTA tile configurations.
 - [ ] Implement a dedicated **attention decode kernel**.
 - [ ] Implement **SIMT** versions of the attention kernels.
-- [ ] Implement an **RMSNorm kernel**.
 - [ ] Implement a **RoPE (rotary positional embedding) kernel**.
 - [ ] Finish the **execution graphs** that connect model operations.
 - [ ] Implement the **tokenizer**.
@@ -91,7 +92,7 @@ InferenceEngine/
 │   ├── cuda_resources/         # CUDA resource and handle management
 │   ├── memory/                 # Host and device arenas
 │   └── model/
-│       ├── decoder_layer/      # Attention kernels
+│       ├── decoder_layer/      # Attention and RMSNorm kernels
 │       └── ggml/               # GGUF and quantization interfaces
 ├── src/                        # Core implementations and current driver stub
 ├── test/                       # GoogleTest numerical correctness tests

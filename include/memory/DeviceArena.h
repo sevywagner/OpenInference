@@ -7,18 +7,20 @@
 #include <vector>
 #include <span>
 
+#define DEVICE_PTR_ALIGNMENT 256
+
 namespace Memory {
   class DeviceArena {
   private:
     RAIIBufferDevice<u8> _memory;
     u64 _memory_it;
     u64 _capacity;
-
+    
     ::std::vector< RAIIBufferDevice<u8> > _excess;
-
+    
     void move(DeviceArena &&other);
     void free_excess();
-  
+    
   public:
     DeviceArena() = delete;
     DeviceArena(u64 capacity);
@@ -27,7 +29,7 @@ namespace Memory {
     DeviceArena &operator=(const DeviceArena &) = delete;
     DeviceArena &operator=(DeviceArena &&other);
     ~DeviceArena() = default;
-  
+    
     void *allocate(u64 size);
     void reset();
   };
